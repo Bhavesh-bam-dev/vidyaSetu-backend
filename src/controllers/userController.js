@@ -1,4 +1,5 @@
 import User from '../models/User.js'; // Assuming User model exists
+import { Op } from 'sequelize';
 
 export const checkStudentExists = async (req, res) => {
 	try {
