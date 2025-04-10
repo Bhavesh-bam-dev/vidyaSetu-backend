@@ -6,6 +6,11 @@ const getUserEmailById = async (id) => {
 	return user.email;
 };
 
+const getUserIdByEmail = async (email) => {
+	const user = await User.findOne({ where: { email } });
+	return user.id;
+};
+
 const getClientClassObj = async (dbClass) => {
 	const clientClass = {
 		classId: dbClass.id,
@@ -114,8 +119,10 @@ export const enrollMoreStudents = async (req, res) => {
 
 export const removeStudentFromClass = async (req, res) => {
 	try {
-		const { studentId } = req.body;
+		const { studentEmail } = req.body;
 		const { classId } = req.params;
+
+		const studentId = await getUserIdByEmail(studentEmail);
 
 		const existingClass = await Class.findByPk(classId);
 		if (!existingClass) {
@@ -126,7 +133,7 @@ export const removeStudentFromClass = async (req, res) => {
 
 		await existingClass.update({ enrolledStudents: updatedStudents });
 
-		res.status(200).json({ message: 'Student removed successfully', enrolledStudents: updatedStudents });
+		res.status(200).json({ message: 'Student removed successfully', existingClass });
 	} catch (error) {
 		res.status(500).json({ error: 'Error removing student' });
 	}
