@@ -25,3 +25,35 @@ export const checkStudentExists = async (req, res) => {
 		res.status(500).json({ error: 'Internal Server Error' });
 	}
 };
+
+export const getStudentSuggestions = async (req, res) => {
+	try {
+		// Ensure only teachers can access this API
+		if (req.user.role !== 'teacher') {
+			return res.status(403).json({ error: 'Access denied. Only teachers can perform this action.' });
+		}
+
+		const { keyword } = req.query;
+
+		if (!keyword) {
+			return res.status(400).json({ error: 'Keyword is required' });
+		}
+
+		// Find students whose email contains the keyword
+		const students = await User.findAll({
+			where: {
+				email: {
+					[Op.like]: `%${keyword}%`,
+				},
+				role: 'student',
+			},
+		});
+
+		const emails = students.map((student) => student.email);
+
+		return res.status(200).json({ emails });
+	} catch (error) {
+		console.error('Error fetching student emails:', error);
+		res.status(500).json({ error: 'Internal Server Error' });
+	}
+};

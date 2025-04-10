@@ -111,3 +111,42 @@ export const enrollMoreStudents = async (req, res) => {
 		res.status(500).json({ error: 'Error enrolling students' });
 	}
 };
+
+export const removeStudentFromClass = async (req, res) => {
+	try {
+		const { studentId } = req.body;
+		const { classId } = req.params;
+
+		const existingClass = await Class.findByPk(classId);
+		if (!existingClass) {
+			return res.status(404).json({ error: 'Class not found' });
+		}
+
+		const updatedStudents = existingClass.enrolledStudents.filter((id) => id !== studentId);
+
+		await existingClass.update({ enrolledStudents: updatedStudents });
+
+		res.status(200).json({ message: 'Student removed successfully', enrolledStudents: updatedStudents });
+	} catch (error) {
+		res.status(500).json({ error: 'Error removing student' });
+	}
+};
+export const updateClassDetails = async (req, res) => {
+	try {
+		const { classId } = req.params;
+		const { title, description } = req.body;
+
+		const existingClass = await Class.findByPk(classId);
+		if (!existingClass) {
+			return res.status(404).json({ error: 'Class not found' });
+		}
+
+		await existingClass.update({ title, description });
+
+		const updatedClass = await getClientClassObj(existingClass);
+
+		res.status(200).json(updatedClass);
+	} catch (error) {
+		res.status(500).json({ error: 'Error updating class details' });
+	}
+};
