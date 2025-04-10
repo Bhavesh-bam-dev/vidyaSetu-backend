@@ -8,6 +8,6 @@ router.post('/classes', authMiddleware, createClass);
 router.get('/classes/:classId', authMiddleware, getClassById);
 router.get('/classes', authMiddleware, getStudentClasses);
 router.post('/classes/:classId/enroll', authMiddleware, enrollMoreStudents);
-router.patch('/classes/:classId/removeStudent', authMiddleware, removeStudentFromClass);
+router.delete('/classes/:classId/removeStudent', authMiddleware, removeStudentFromClass);
 
 export default router;
