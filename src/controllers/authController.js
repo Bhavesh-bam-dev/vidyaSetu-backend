@@ -17,9 +17,9 @@ const JWT_EXPIRATION = process.env.JWT_EXPIRATION;
 
 // Register a new user
 const register = async (req, res) => {
-	const { email, password, role } = req.body;
+	const { fullname, email, password, role } = req.body;
 
-	console.log('---------------Registration request:', email, password, role);
+	console.log('---------------Registration request:', fullname, email, password, role);
 
 	try {
 		// Check if user already exists
@@ -33,11 +33,12 @@ const register = async (req, res) => {
 		}
 
 		// Create new user
-		const user = await User.create({ email, password, role });
+		const user = await User.create({ fullname, email, password, role });
 
 		const responseUser = {
 			id: user.id,
 			role: user.role,
+			fullname: user.fullname,
 			email: user.email,
 		};
 		res.status(201).json({ message: 'User registered successfully', user: responseUser });
@@ -75,6 +76,7 @@ const login = async (req, res) => {
 			message: 'Login successful',
 			user: {
 				id: user.id,
+				fullname: user.fullname,
 				email: user.email,
 				role: user.role,
 				token: token,
